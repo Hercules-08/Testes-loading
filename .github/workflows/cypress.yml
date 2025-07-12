@@ -19,11 +19,27 @@ jobs:
         with:
           node-version: 18
 
+      - name: Cache do Cypress
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            cypress-${{ runner.os }}
+
+      - name: Criar package.json mínimo
+        run: |
+          echo '{}' > package.json
+
       - name: Instalar Cypress
         run: npm install cypress --save-dev
+        env:
+          CYPRESS_VERIFY_TIMEOUT: 100000
 
       - name: Rodar Cypress
         run: npx cypress run
+        env:
+          CYPRESS_VERIFY_TIMEOUT: 100000
 
       - name: Salvar vídeos e screenshots
         if: always()
@@ -33,3 +49,4 @@ jobs:
           path: |
             cypress/screenshots
             cypress/videos
+
